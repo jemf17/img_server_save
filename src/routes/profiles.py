@@ -22,3 +22,7 @@ async def delete_user_profile(user_id: UUID):
 async def add_friend_to_user(image: UploadFile = File(...), id_user: UUID = Body(...)):
     ruta = ProfileModel().add(id_user, image)
     return {'image': ruta}
+
+#@profileRoute.delete("/deleteuser/{user_id}")
+#async def remove_friend_to_user(user_id: UUID):
+#    return ProfileModel().deleteUser(user_id)

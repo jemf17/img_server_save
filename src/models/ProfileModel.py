@@ -38,19 +38,19 @@ class ProfileModel():
             file_location = user_folder / image.filename
             with file_location.open("wb") as buffer:
                 shutil.copyfileobj(image.file, buffer)
-            return file_location
+            return {"success": True, "message": 'Ok'}
         except Exception as e:
             return {"success": False, "error": str(e)}
-    @classmethod
+    """"@classmethod
     def delete(self, user_id: UUID):
         try:
-            user_folder = Path(f"""save/profile/{user_id}""")
+            user_folder = Path(f"save/profile/{user_id}")
             #limpia el directorio del usuario
             for file in user_folder.iterdir():
                 file.unlink()
             print("Deleting profile")
         except Exception as e:
-            return {"success": False, "error": str(e)}
+            return {"success": False, "error": str(e)}"""
     @classmethod
     def get(self, user_id: UUID):
         try:
@@ -61,5 +61,13 @@ class ProfileModel():
             #if len(image_files) > 1:
             #    raise HTTPException(status_code=500, detail="Hay más de una imagen en el directorio")
             return FileResponse(image_files[0])
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+    @classmethod
+    def delete(self, user_id: UUID):
+        try:
+            user_folder = Path(f"""save/profile/{user_id}""")
+            shutil.rmtree(user_folder)
+            return {"message": "User deleted"}
         except Exception as e:
             return {"success": False, "error": str(e)}
