@@ -23,7 +23,6 @@ class ProfileModel():
                 shutil.copyfileobj(image.file, buffer)
             return {'message' : url_img}
         except Exception as e:
-            print(f"Error adding new profile: {e}")
             return {"success": False, "error": str(e)}
     @classmethod
     def update(self, user_id: UUID, image):

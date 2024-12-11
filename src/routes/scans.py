@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Path, Body
-from src.models import ImageModel
+from src.models.ScanModel import ScanModel
 from uuid import UUID
 
 scanRoute = APIRouter(prefix="/scan", tags=['scan'], responses={404: {"description": "Not found"}})
