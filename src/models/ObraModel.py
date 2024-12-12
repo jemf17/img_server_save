@@ -7,8 +7,9 @@ from fastapi.responses import FileResponse
 from fastapi import HTTPException
 class ObraModel():
     @classmethod
-    def add(self, id_obra: UUID, pags, portada):
+    def add(self, id_obra: UUID, pags, portada, textnt):
         try:
+            print(type(id_obra), type(pags), type(portada), type(textnt))
             load_dotenv()
             #se define la ruta base
             rute = os.getenv('OBRA_RUTE')
@@ -32,6 +33,8 @@ class ObraModel():
                 page_location = pages_folder / page.filename
                 with page_location.open("wb") as buffer:
                     shutil.copyfileobj(page.file, buffer)
+            if len(textnt) != 0:
+                pass
             return {'portada': port_location, 'pages': pags_url}
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -39,7 +42,11 @@ class ObraModel():
     @classmethod
     def delete(self, id_obra: UUID):
         try:
-            pass
+            load_dotenv()
+            rute = os.getenv('OBRA_RUTE')
+            obra_folder = Path(rute) / str(id_obra)
+            shutil.rmtree(obra_folder)
+            return {"message": "obra deleted"}
         except Exception as e:
             return {"success": False, "error": str(e)}
     @classmethod
@@ -70,14 +77,46 @@ class ObraModel():
         except Exception as e:
             return {"success": False, "error": str(e)}
     @classmethod
-    def updatePortada(self, id_obra: UUID):
+    def updatePortada(self, id_obra: UUID, image):
         try:
-            pass
+            load_dotenv()
+            obra_rute = os.getenv('OBRA_RUTE')
+            obra_folder = Path(obra_rute) / str(id_obra) / 'portada'
+            #limpia el directorio del usuario
+            print("directorio",obra_folder)
+            for file in obra_folder.iterdir():
+                file.unlink()
+            file_location = obra_folder / image.filename
+            with file_location.open("wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            return {"success": True, "message": 'Ok'}
         except Exception as e:
             return {"success": False, "error": str(e)}
     @classmethod
-    def update(self, id_obra: UUID, pags, portada):
+    def update(self, id_obra: UUID, newpags, oldpags):
         try:
-            pass
+            # primero se determina la obra a actualizar con el id_obra
+            # luego se resive las nuevas paginas y las viejas paginas, pero solamente el nombre de las mismas para identificarlas
+            # se busca esa obra, se elimina y despues se agrega la imagen de la lista de newpags
+            # asi iterativamente y se retorna una lista con las nuevas rutas de las paginas editadas
+            # en el front se debera identificar el numero de pagina de cada pag editada y ese mismo orden tendra que tener 
+            # las nuevas y viejas pags ej: [2,4,5] -> [newp2,newp4,newp5] y [oldp2,oldp4,oldp5]
+            url_newp = []
+            if len(newpags) != len(oldpags):
+                raise HTTPException(status_code=404, detail="Los arrays no tienen la misma longitud")
+            load_dotenv()
+            obra_rute = os.getenv('OBRA_RUTE')
+            pages_folder = Path(obra_rute) / str(id_obra) / 'pages'
+            for i in range(len(newpags)):
+                #agrega
+                url_newp.append(f"obras/{id_obra}/{newpags[i].filename}")
+                page_location = pages_folder / newpags[i].filename
+                with page_location.open("wb") as buffer:
+                    shutil.copyfileobj(newpags[i].file, buffer)
+                #elimina
+                old_page_location = pages_folder / oldpags[i]
+                if old_page_location.exists():
+                    old_page_location.unlink()
+            return {'newpags': url_newp}
         except Exception as e:
             return {"success": False, "error": str(e)}
