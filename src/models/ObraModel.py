@@ -9,7 +9,7 @@ class ObraModel():
     @classmethod
     def add(self, id_obra: UUID, pags, portada, textnt):
         try:
-            print(type(id_obra), type(pags), type(portada), type(textnt))
+            #print(type(id_obra), type(pags), type(portada), type(textnt))
             load_dotenv()
             #se define la ruta base
             rute = os.getenv('OBRA_RUTE')

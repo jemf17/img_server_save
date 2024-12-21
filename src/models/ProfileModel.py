@@ -14,7 +14,7 @@ class ProfileModel():
             user_folder = Path(profile_rute) / str(user_id)
             user_folder.mkdir(parents=True, exist_ok=True)
             file_location = user_folder / image.filename
-            url_img  = f'''profile/{user_id}'''
+            url_img  = f'''profiles/{user_id}'''
             files = [f for f in user_folder.iterdir() if f.is_file()]
             if len(files) >= 1:
                 raise HTTPException('Profile already exists')
@@ -31,7 +31,6 @@ class ProfileModel():
             profile_rute = os.getenv('PROFILE_RUTE')
             user_folder = Path(profile_rute) / str(user_id)
             #limpia el directorio del usuario
-            print("directorio",user_folder)
             for file in user_folder.iterdir():
                 file.unlink()
             file_location = user_folder / image.filename
@@ -53,7 +52,7 @@ class ProfileModel():
     @classmethod
     def get(self, user_id: UUID):
         try:
-            IMAGE_DIRECTORY = Path(f"""save/profile/{user_id}""")
+            IMAGE_DIRECTORY = Path(f"""save/profiles/{user_id}""")
             image_files = list(IMAGE_DIRECTORY.glob("*"))
             if not image_files:
                 raise HTTPException(status_code=404, detail="No hay imágenes en el directorio")
@@ -65,7 +64,7 @@ class ProfileModel():
     @classmethod
     def delete(self, user_id: UUID):
         try:
-            user_folder = Path(f"""save/profile/{user_id}""")
+            user_folder = Path(f"""save/profiles/{user_id}""")
             shutil.rmtree(user_folder)
             return {"message": "User deleted"}
         except Exception as e:
